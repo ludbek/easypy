@@ -33,6 +33,10 @@ def run_package_task(argv):
     package_name = argv[1]
     if not package_name in site_packages:
         raise Exception
+    # if length of argv is 2, the request is in format $ py <package>
+    # list the tasks in package
+    if len(argv) == 2:
+        argv.append('-l')
     cli.dispatch(prepare_args(argv))
 
 def run_local_task(argv):
@@ -42,6 +46,10 @@ def run_local_task(argv):
     task = argv[1]
     from invoke.loader import FilesystemLoader
     tasks = FilesystemLoader().load().task_names
+    if task == 'tasks':
+        argv[1] = '-l'
+        cli.dispatch(argv)
+        return True
     if not task in tasks.keys():
         raise Exception
     cli.dispatch(argv)
@@ -50,21 +58,26 @@ def run_ollo_task(argv):
     """
     Run task in ollo.
     """
-    task = argv[1]
     from ollo import tasks
     tasks = Collection.from_module(tasks).task_names
-    if not task in tasks.keys():
-        raise Exception
-    cli.dispatch(prepare_args(argv, 'ollo'))
+    if len(argv) == 1:
+        # the request is in the format $ py
+        # display each tasks and ways to get help on them
+        print "Available tasks:\n"
+        for task in tasks:
+            print "\t%s\n"%task
+
+    else:
+        # the request is in the format $ py <task>
+        task = argv[1]
+        if not task in tasks.keys():
+            raise Exception
+        cli.dispatch(prepare_args(argv, 'ollo'))
 
 def get_tasks(path = os.getcwd()):
     return None
 
 def router(argv):
-    # check the number of args
-    ## if 3 args it could be for module
-    ## if 2 args it could be for local or ollo tasks
-    ### if 1 display help
     # assume the task is from module's directory
     try:
         run_package_task(argv)
