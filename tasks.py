@@ -33,3 +33,20 @@ def start(name, dir = None, python = None, force = False):
     run("echo {0} > {1}/.project".format(project_path, project_env_path))
     print "The project has been successfully created.\nTo work on it issue following command.\n$ workon %s"%name
 
+
+@task
+def end(name, all = False):
+    """
+    Remove a virtualenv related to project, {name}.
+    If all is True, remove the project directory as well.
+    """
+    project_env_path = '{}/{}'.format(VIRTUALENV_HOME, name)
+    if all:
+        project_path_file = '{}/.project'.format(project_env_path)
+        afile = open(project_path_file, 'r')
+        project_path = afile.read()
+        afile.close()
+        print "Removing {}".format(project_path)
+        run('rm -RI {}'.format(project_path), pty = True)
+    print "Removing {}".format(project_env_path)
+    run('rm -RI {}'.format(project_env_path), pty = True)

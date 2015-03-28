@@ -3,7 +3,7 @@ import os
 from importlib import import_module
 
 from invoke import cli
-from invoke.exceptions import Failure
+from invoke.exceptions import Failure, CollectionNotFound
 from invoke.tasks import Task
 from invoke.collection import Collection
 
@@ -47,7 +47,10 @@ def run_local_task(argv):
     """
     task = argv[1]
     from invoke.loader import FilesystemLoader
-    tasks = FilesystemLoader().load().task_names
+    try:
+        tasks = FilesystemLoader().load().task_names
+    except CollectionNotFound:
+        raise TaskNotAvailable(task)
     if task == 'tasks':
         argv[1] = '-l'
         cli.dispatch(argv)
@@ -56,11 +59,11 @@ def run_local_task(argv):
         raise TaskNotAvailable(task)
     cli.dispatch(argv)
 
-def run_ollo_task(argv):
+def run_easypy_task(argv):
     """
     Run task in ollo.
     """
-    from ollo import tasks
+    from easypy import tasks
     tasks = Collection.from_module(tasks).task_names
     if len(argv) == 1:
         # the request is in the format $ py
@@ -74,7 +77,7 @@ def run_ollo_task(argv):
         task = argv[1]
         if not task in tasks.keys():
             raise TaskNotAvailable(task)
-        cli.dispatch(prepare_args(argv, 'ollo'))
+        cli.dispatch(prepare_args(argv, 'easypy'))
 
 def get_tasks(path = os.getcwd()):
     return None
@@ -83,6 +86,9 @@ def router(argv):
     """
     Dispatch appropriate task.
     """
+    if len(argv) == 1:
+        run_easypy_task(argv)
+        return True
     # assume the task is from module's directory
     try:
         run_package_task(argv)
@@ -93,8 +99,8 @@ def router(argv):
         run_local_task(argv)
     except TaskNotAvailable as e:
         pass
-    # assume the task is from ollo
+    # assume the task is from easypy
     try:
-        run_ollo_task(argv)
+        run_easypy_task(argv)
     except TaskNotAvailable as e:
         print e
