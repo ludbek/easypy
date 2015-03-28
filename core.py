@@ -7,6 +7,8 @@ from invoke.exceptions import Failure
 from invoke.tasks import Task
 from invoke.collection import Collection
 
+from easypy.exceptions import TaskNotAvailable, PackageNotAvailable
+
 def get_site_dir():
     return [p for p in sys.path if p.endswith('site-packages')][-1]
 
@@ -32,7 +34,7 @@ def run_package_task(argv):
     _, site_packages, _ = next(os.walk(get_site_dir()))
     package_name = argv[1]
     if not package_name in site_packages:
-        raise Exception
+        raise PackageNotAvailable(package_name)
     # if length of argv is 2, the request is in format $ py <package>
     # list the tasks in package
     if len(argv) == 2:
@@ -51,7 +53,7 @@ def run_local_task(argv):
         cli.dispatch(argv)
         return True
     if not task in tasks.keys():
-        raise Exception
+        raise TaskNotAvailable(task)
     cli.dispatch(argv)
 
 def run_ollo_task(argv):
@@ -71,25 +73,28 @@ def run_ollo_task(argv):
         # the request is in the format $ py <task>
         task = argv[1]
         if not task in tasks.keys():
-            raise Exception
+            raise TaskNotAvailable(task)
         cli.dispatch(prepare_args(argv, 'ollo'))
 
 def get_tasks(path = os.getcwd()):
     return None
 
 def router(argv):
+    """
+    Dispatch appropriate task.
+    """
     # assume the task is from module's directory
     try:
         run_package_task(argv)
-    except Exception:
+    except PackageNotAvailable as e:
         pass
     # assume the task is from user's project directorys
     try:
         run_local_task(argv)
-    except Exception:
+    except TaskNotAvailable as e:
         pass
     # assume the task is from ollo
     try:
         run_ollo_task(argv)
-    except Exception:
-        pass
+    except TaskNotAvailable as e:
+        print e
