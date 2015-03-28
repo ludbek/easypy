@@ -1,13 +1,14 @@
 import sys
 import os
 from importlib import import_module
+import re
 
 from invoke import cli
 from invoke.exceptions import Failure, CollectionNotFound
 from invoke.tasks import Task
 from invoke.collection import Collection
 
-from easypy.exceptions import TaskNotAvailable, PackageNotAvailable
+from easypy.exceptions import TaskNotAvailable, PackageNotAvailable, InvalidPackage
 
 def get_site_dir():
     return [p for p in sys.path if p.endswith('site-packages')][-1]
@@ -27,6 +28,52 @@ def prepare_args(sys_args, package = None):
     tailored_args.extend(task_n_args)
     return tailored_args
 
+def print_title(title):
+    print title
+    print '-'*20
+
+def is_valid_package(package_name):
+    """
+    Checks if a package at site directory has tasks.
+    """
+    apackage = import_module('%s.tasks'%package_name)
+    tasks = Collection.from_module(apackage).task_names
+    if tasks == {}:
+        return False
+    return True
+
+def display_tasks_everywhere():
+    """
+    Display tasks in easypy, project directory and packages in site directory.
+    """
+    display_easypy_tasks()
+    display_local_tasks()
+    # walk through every packages in site_packages directory
+    _, packages, _ = next(os.walk(get_site_dir()))
+    valid_packages = filter(lambda package: not re.search(r'info$', package), packages)
+    for package in valid_packages:
+        display_apackage_tasks(package)
+
+def display_easypy_tasks():
+    print_title("At easypy")
+    argv = ['xxx.py']
+    argv.append('-l')
+    cli.dispatch(prepare_args(argv, 'easypy'))
+    print "displayed easypy tasks"
+
+def display_local_tasks():
+    print_title("In this project")
+    cli.dispatch(['xxx.py', '-l'])
+
+def display_apackage_tasks(package_name):
+    """
+    Display tasks in a site package.
+    """
+    argv = ['xxx']
+    argv.append('-l')
+    print_title("In %s"%package_name)
+    cli.dispatch(prepare_args(argv, package_name))
+
 def run_package_task(argv):
     """
     Run tasks in a site package.
@@ -35,10 +82,13 @@ def run_package_task(argv):
     package_name = argv[1]
     if not package_name in site_packages:
         raise PackageNotAvailable(package_name)
+    if not is_valid_package(package_name):
+        raise InvalidPackage(package_name)
     # if length of argv is 2, the request is in format $ py <package>
     # list the tasks in package
     if len(argv) == 2:
-        argv.append('-l')
+        display_apackage_tasks(package_name)
+        return
     cli.dispatch(prepare_args(argv))
 
 def run_local_task(argv):
@@ -51,27 +101,23 @@ def run_local_task(argv):
         tasks = FilesystemLoader().load().task_names
     except CollectionNotFound:
         raise TaskNotAvailable(task)
-    if task == 'tasks':
-        argv[1] = '-l'
-        cli.dispatch(argv)
-        return True
+    if task == '.':
+        display_local_tasks()
+        return
     if not task in tasks.keys():
         raise TaskNotAvailable(task)
     cli.dispatch(argv)
 
 def run_easypy_task(argv):
     """
-    Run task in ollo.
+    Run task in easypy.
     """
     from easypy import tasks
     tasks = Collection.from_module(tasks).task_names
     if len(argv) == 1:
         # the request is in the format $ py
-        # display each tasks and ways to get help on them
-        print "Available tasks:\n"
-        for task in tasks:
-            print "\t%s\n"%task
-
+        # display available tasks in easypy
+        display_easypy_tasks()
     else:
         # the request is in the format $ py <task>
         task = argv[1]
@@ -79,25 +125,25 @@ def run_easypy_task(argv):
             raise TaskNotAvailable(task)
         cli.dispatch(prepare_args(argv, 'easypy'))
 
-def get_tasks(path = os.getcwd()):
-    return None
-
 def router(argv):
     """
-    Dispatch appropriate task.
+    Dispatch to appropriate task.
     """
+    if len(argv) == 2 and argv[1] in ['-a', '--all']:
+        display_tasks_everywhere()
+        return
     if len(argv) == 1:
         run_easypy_task(argv)
-        return True
+        return
     # assume the task is from module's directory
     try:
         run_package_task(argv)
-    except PackageNotAvailable as e:
+    except (PackageNotAvailable, InvalidPackage):
         pass
     # assume the task is from user's project directorys
     try:
         run_local_task(argv)
-    except TaskNotAvailable as e:
+    except TaskNotAvailable:
         pass
     # assume the task is from easypy
     try:
