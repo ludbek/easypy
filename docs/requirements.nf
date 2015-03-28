@@ -58,10 +58,19 @@ Tasks
                 - like read and parse file name mentioned in long_description, license, etc.
 
         Syntax
-            $py start <project-name> [-p]
+            $ py start <project-name> -d <directory-name> -f -p
+            project-name : name of project
+            directory-name
+                - directory where project will reside
+                - if not availabel it will look one at "PROJECT_HOME" enviroment \
+                varialble
+            -f : if a directory with requested project name exists \
+            replace it(back it up)
+            -p : it is a pythong package
+
             e.g.
-                $ py start awesome_project
-                $ py start . # if already in an empty project directory
+                $ py start awesome-project
+                $ py start awesome-project -d . -f
 
     2. meta.<meta_key>
         sets or gets the value of a meta key
@@ -72,9 +81,29 @@ Tasks
             $ py meta.name  # get project name
 
     3. transform
-        trnsforms a local module into a python package
+        transforms a local module into a python package
 
-    4.terminate
-        ends a project, deletes its virtualenv
+    4. end
+        ends a project, deletes its virtualenv, if specified removes the \
+        project directory as well
+
+        Syntax
+            $ py end <project-name> -a
+            project-name : name of the project
+            -a, --all : remove project directory as well
+    5. py
+        lists help and tasks
+
+        5.1. display easypy tasks
+        Syntax: $ py
+
+        5.2. display local tasks
+        Syntax: $ py .
+
+        5.3. display tasks in a package
+        Syntax: $ py <package-name>
+
+        5.4. display every tasks
+        Syntax: $ py -a
 
 note: USE REGEX TO MANIPULATE FILE?
