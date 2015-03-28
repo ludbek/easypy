@@ -27,7 +27,7 @@ def start(name, dir = None, python = None, force = False):
     if force:
         # back up a directory if already exists
         if (os.path.exists(project_path)):
-            run("mv {0} {0}-bck".format(project_path), pty = True)
+            run("mv {0} {0}.bck".format(project_path), pty = True)
     run("mkdir {}".format(project_path), pty = True)
     # create virtualenv
     run('virtualenv {}'.format(project_env_path))

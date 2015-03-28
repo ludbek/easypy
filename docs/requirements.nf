@@ -24,35 +24,7 @@ Tasks
                         __init__.py
                         __meta__.py
             inside __meta__.py
-                # https://tom-christie.github.io/articles/pypi/
-                meta = {
-                    # for local developement
-                    'name' : <project name>,
-                    'version' : <project version>,
-                    'description' : <project description>,
-                    'author' : <project owner>,
-                    'author_email' : <owner email>,
-                    'install_requires' : {
-                        'common' : [],
-                        'dev' : [],
-                        'test' : [],
-                        'prod' : []
-                    }
-                    # for pypi
-                    'long_description' : '',
-                    'url' : <project's home page>,
-                    'license' : <project license",
-                    'classifiers' : '', # See https://PyPI.python.org/PyPI?%3Aaction=list_classifier
-                    'keywords' : <tags>,
-                    'include_package_data' : True/False,
-                    'package_data' : {},
-                    'entry_points' = {
-                        'console_scripts' : [],
-                    }
-                    'packages' : [],
-
-                    ...
-                }
+                - view file 'templates/__meta__.py'
             inside setup.py
                 - convert __meta__.meta dicts into proper setup() args
                 - like read and parse file name mentioned in long_description, license, etc.
