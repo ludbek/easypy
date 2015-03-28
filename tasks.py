@@ -25,7 +25,9 @@ def start(name, dir = None, python = None, force = False):
             raise TaskFailure("Please pass project path or set 'PROJECT_HOME' environment variable.")
     # make project directory
     if force:
-        run("rm -R {}".format(project_path), pty = True)
+        # back up a directory if already exists
+        if (os.path.exists(project_path)):
+            run("mv {0} {0}-bck".format(project_path), pty = True)
     run("mkdir {}".format(project_path), pty = True)
     # create virtualenv
     run('virtualenv {}'.format(project_env_path))
