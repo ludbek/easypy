@@ -54,3 +54,53 @@ def end(name, all = False):
         run('rm -RI {}'.format(project_path), pty = True)
     print "Removing {}".format(project_env_path)
     run('rm -RI {}'.format(project_env_path), pty = True)
+
+
+@task
+def add(package, dev = False, test = False, prod = False):
+    """
+    Add a package.
+    """
+    run("pip install %s"%package)
+    # record it at project meta
+
+@task
+def remove(package):
+    """
+    Remove a package.
+    """
+    run("pip uninstall %s"%package)
+    # remove a package
+    # remove its record from project meta
+
+@task
+def update(package):
+    """
+    Update a package.
+    """
+    run("pip uninstall %s"%package)
+    run("pip install %s"%package)
+    # update a package
+    # update its record at project meta
+
+@task
+def list(name, dev = False, test = False, prod = False, all = False):
+    """
+    List installed packages.
+    """
+    # list packages at respective sector
+    pass
+
+@task
+def search(name):
+    """
+    Search for a package.
+    """
+    pass
+
+@task
+def about(name, package):
+    """
+    Give information on a project.
+    """
+    pass

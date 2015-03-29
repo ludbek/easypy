@@ -1,5 +1,6 @@
 import re
 import os
+import json
 import shutil
 from string import Template
 
@@ -78,3 +79,37 @@ class CloneProject(object):
         f.write(rendered_content)
         f.close
 
+class Config(object):
+    """
+    Gets and sets configurations.
+    """
+    def __init__(self, file_name):
+        self.file_name = file_name
+        self.file = open(self.file_name, 'r')
+        self.data = json.loads(self.file.read())
+        self.file.close()
+
+    def add(self, key, value):
+        self.file = open(self.file_name, 'w')
+        self.data[key].append(value)
+        self.save()
+
+    def get(self, key):
+        self.file = open(self.file_name, 'r')
+        return self.data[key]
+
+    def remove(self, key, value):
+        self.file = open(self.file_name, 'w')
+        items = self.data[key]
+        to_remove = filter(lambda item: re.match(r'%s'%value, item), items)
+        self.data[key].remove(to_remove.pop())
+        self.save()
+
+    def update(self, key, hint, value):
+        self.file = open(self.file_name, 'w')
+        self.remove(key, hint)
+        self.add(key, value)
+
+    def save(self):
+        self.file.write(json.dumps(self.data, indent = 4))
+        self.file.close()
