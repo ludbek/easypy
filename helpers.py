@@ -2,6 +2,7 @@ import re
 import os
 import json
 import shutil
+import sys
 from string import Template
 
 from invoke import run
@@ -17,6 +18,19 @@ def get_abs_path(path):
     else:
         return path
 
+def get_site_dir():
+    return [p for p in sys.path if p.endswith('site-packages')][-1]
+
+def get_package_detail(package_name):
+    """
+    Return name and version of a package.
+    """
+    site_dir = get_site_dir()
+    _, packages, _ = next(os.walk(site_dir))
+    required_packages = filter(lambda item: re.match(r'%s'%package_name, item), packages)
+    d_package = filter(lambda item: 'info' in item, required_packages).pop()
+    package_data = re.search(r"(?P<package_name>.+?)-(?P<version>[\d\.]+)", d_package)
+    return "{package_name}=={version}".format(**package_data.groupdict())
 
 class CloneProject(object):
     def __init__(self, source_dir, dest_dir, kwargs, force = False):

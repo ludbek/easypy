@@ -61,27 +61,42 @@ def add(package, dev = False, test = False, prod = False):
     """
     Add a package.
     """
-    run("pip install %s"%package)
-    # record it at project meta
+    run("pip install %s"%package, pty = True)
+    c = helpers.Config('requirements.json')
+    package_detail = helpers.get_package_detail(package)
+    if dev:
+        c.add('dev', package_detail)
+    elif test:
+        c.add('test', package_detail)
+    elif prod:
+        c.add('prod', package_detail)
+    else:
+        c.add('common', package_detail)
 
 @task
-def remove(package):
+def remove(package, dev = False, test = False, prod = False):
     """
     Remove a package.
     """
-    run("pip uninstall %s"%package)
-    # remove a package
-    # remove its record from project meta
+    run("pip uninstall %s"%package, pty = True)
+    c = helpers.Config('requirements.json')
+    if dev:
+        c.remove('dev', package)
+    elif test:
+        c.remove('test', package)
+    elif prod:
+        c.remove('prod', package)
+    else:
+        c.remove('common', package)
+
 
 @task
 def update(package):
     """
     Update a package.
     """
-    run("pip uninstall %s"%package)
-    run("pip install %s"%package)
-    # update a package
-    # update its record at project meta
+    remove(package)
+    add(package)
 
 @task
 def list(name, dev = False, test = False, prod = False, all = False):
