@@ -8,11 +8,11 @@ from invoke import run
 def get_abs_path(path):
     cwd = os.getcwd()
     if (re.match(r"./", path)):
-        return '{}/{}'.format(cwd, path[2:])
+        os.path.join(cwd, path)
     elif(re.match(r'^.$', path)):
         return cwd
     elif re.match(r"[^/]", path):
-        return '{}/{}'.format(cwd, path)
+        os.path.join(cwd, path)
     else:
         return path
 
@@ -23,6 +23,8 @@ class CloneProject(object):
         self.dest = dest_dir
         self.kwargs = kwargs
         self.force = force
+        self.copy()
+        self.render()
 
     def copy(self):
         """
