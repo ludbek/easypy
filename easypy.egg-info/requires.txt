@@ -1,0 +1,3 @@
+invoke==0.10.1
+virtualenv==12.0.1
+virtualenvwrapper==4.3.1

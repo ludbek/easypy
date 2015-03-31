@@ -55,7 +55,6 @@ def end(name, all = False):
     print "Removing {}".format(project_env_path)
     run('rm -RI {}'.format(project_env_path), pty = True)
 
-
 @task
 def add(package, dev = False, test = False, prod = False):
     """
@@ -149,7 +148,7 @@ def update(package):
     add(package)
 
 @task
-def list(name, dev = False, test = False, prod = False, all = False):
+def list(env):
     """
     List installed packages.
     """

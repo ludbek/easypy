@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: easypy
+Version: 0.0.0
+Summary: A package manager, package creator and task executor for python.
+Home-page: https://github.com/ludbek/easypy
+Author: ludbek
+Author-email: sth.srn@gmail.com
+License: a license
+Description: Long description here.
+Keywords: package manager,task executor,package creator
+Platform: UNKNOWN

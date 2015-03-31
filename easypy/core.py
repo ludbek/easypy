@@ -14,16 +14,20 @@ def get_site_dir():
     return [p for p in sys.path if p.endswith('site-packages')][-1]
 
 def prepare_args(sys_args, package = None):
-    site_dir = get_site_dir()
     tailored_args = []
     script = sys_args[0]
     if package:
+        site_dir = get_site_dir()
         site_package = package
         task_n_args = sys_args[1:]
+        site_package_path = "%s/%s"%(site_dir, site_package)
     else:
-        site_package = sys_args[1]
-        task_n_args = sys_args[2:]
-    site_package_path = "%s/%s"%(site_dir, site_package)
+        # it is for easypy
+        # start and end command is executed when easypy is not installed in virtualenv
+        # so this exception is necessary
+        import easypy
+        site_package_path = easypy.__path__[0]
+        task_n_args = sys_args[1:]
     tailored_args.extend([script, '-r', site_package_path])
     tailored_args.extend(task_n_args)
     return tailored_args
@@ -58,8 +62,7 @@ def display_easypy_tasks():
     print_title("At easypy")
     argv = ['xxx.py']
     argv.append('-l')
-    cli.dispatch(prepare_args(argv, 'easypy'))
-    print "displayed easypy tasks"
+    cli.dispatch(prepare_args(argv))
 
 def display_local_tasks():
     print_title("In this project")
@@ -123,18 +126,22 @@ def run_easypy_task(argv):
         task = argv[1]
         if not task in tasks.keys():
             raise TaskNotAvailable(task)
-        cli.dispatch(prepare_args(argv, 'easypy'))
+        cli.dispatch(prepare_args(argv))
 
 def router():
     """
     Dispatch to appropriate task.
     """
     argv = sys.argv
-    if len(argv) == 2 and argv[1] in ['-a', '--all']:
-        display_tasks_everywhere()
-        return
+    print argv
     if len(argv) == 1:
         run_easypy_task(argv)
+        return
+    if argv[1] == 'start' or argv[1] == 'end':
+        run_easypy_task(argv)
+        return
+    if len(argv) == 2 and argv[1] in ['-a', '--all']:
+        display_tasks_everywhere()
         return
     # assume the task is from module's directory
     try:
