@@ -128,16 +128,17 @@ def run_easypy_task(argv):
             raise TaskNotAvailable(task)
         cli.dispatch(prepare_args(argv))
 
-def router():
+def router(argv = None):
     """
     Dispatch to appropriate task.
     """
-    argv = sys.argv
+    if not argv:
+        argv = sys.argv
     print argv
     if len(argv) == 1:
         run_easypy_task(argv)
         return
-    if argv[1] == 'start' or argv[1] == 'end':
+    if argv[1] in ['start', 'end', 'setup']:
         run_easypy_task(argv)
         return
     if len(argv) == 2 and argv[1] in ['-a', '--all']:

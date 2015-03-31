@@ -36,6 +36,26 @@ def start(name, dir = None, version = None, package = False, force = False):
 
     run('virtualenv {}'.format(project_env_path))
     run("echo {0} > {1}/.project".format(project_path, project_env_path))
+    # copy py script to virtualenv and replace python path to the one in vritalenv
+    py_script = """#!{}/bin/python
+
+import sys
+
+from easypy import core
+
+if __name__ == '__main__':
+    core.router(sys.argv)
+""".format(project_env_path)
+    run('echo \"{0}\" > {1}/bin/py'.format(py_script, project_env_path))
+    # help virtualenvwrapper find project directory
+    run('chmod +x {}/bin/py'.format(project_env_path))
+    # copy easypy and invoke to site-packages
+    import easypy
+    import invoke
+    easypy_path = easypy.__path__[0]
+    invoke_path = invoke.__path__[0]
+    run('cp -R {} {}/lib/python2.7/site-packages/'.format(easypy_path, project_env_path))
+    run('cp -R {} {}/lib/python2.7/site-packages/'.format(invoke_path, project_env_path))
     print "The project has been successfully created.\nTo work on it issue following command.\n$ workon %s"%name
 
 @task
