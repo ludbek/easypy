@@ -1,10 +1,11 @@
 import os
+import sys
 
 from invoke import task, run
 from invoke.exceptions import Failure
 
 from easypy import helpers
-from easypy.exceptions import TaskFailure
+from easypy.exceptions import TaskFailure, PackageAlreadyInstalled
 
 VIRTUALENV_HOME = os.getenv('WORKON_HOME')
 PROJECT_HOME = os.getenv('PROJECT_HOME')
@@ -37,7 +38,6 @@ def start(name, dir = None, version = None, package = False, force = False):
     run("echo {0} > {1}/.project".format(project_path, project_env_path))
     print "The project has been successfully created.\nTo work on it issue following command.\n$ workon %s"%name
 
-
 @task
 def end(name, all = False):
     """
@@ -61,9 +61,12 @@ def add(package, dev = False, test = False, prod = False):
     """
     Add a package.
     """
-    run("pip install %s"%package, pty = True)
+    if not helpers.Site.has(package):
+        run("pip install %s"%package, pty = True)
+    else:
+        raise PackageAlreadyInstalled(package)
     c = helpers.Config('requirements.json')
-    package_detail = helpers.get_package_detail(package)
+    package_detail = helpers.Site.detail_on(package)
     if dev:
         c.add('dev', package_detail)
     elif test:
@@ -89,6 +92,53 @@ def remove(package, dev = False, test = False, prod = False):
     else:
         c.remove('common', package)
 
+@task
+def setup(dev = False, test = False, prod = False, all = False):
+    """
+    Setup a project environment.
+    """
+    cwd = os.getcwd()
+    sys.path.append(cwd)
+    from __meta__ import meta
+    project_name = meta['name']
+    project_env_path = "{}".format(os.path.join(VIRTUALENV_HOME, project_name))
+    if dev:
+        env = 'dev'
+        project_env_path = "{}".format(os.path.join(VIRTUALENV_HOME, project_name))
+    elif test:
+        env = 'test'
+        project_env_path = "{}-test".format(os.path.join(VIRTUALENV_HOME, project_name))
+    elif prod:
+        env = 'prod'
+        project_env_path = "{}-prod".format(os.path.join(VIRTUALENV_HOME, project_name))
+    project_path = os.path.join(os.path.dirname(cwd), project_name)
+    run('virtualenv {}'.format(project_env_path))
+    # register dependency resolve task
+    run("echo '\npy resolve' >> {}/bin/activate".format(project_env_path))
+    run("echo '\nEASY_ENV=\"{0}\"\nEXPORT EASY_ENV' >> {1}/bin/activate".format(env, project_env_path))
+    # link the env to project folder
+    run("echo '{0}' > {1}/.project".format(project_path, project_env_path))
+
+@task
+def resolve():
+    # remove resolve command from activate file
+    project_env_path = os.getenv('VIRTUAL_ENV')
+    activate_script_path = os.path.join(project_env_path, 'bin/activate')
+    # read contents
+    activate_script = open(activate_script_path, 'r')
+    script_content = activate_script.read()
+    activate_script.close()
+    script_content = script_content.replace('\npy resolve', '')
+    # remove py resolve command from script
+    activate_script = open(activate_script_path, 'w')
+    activate_script.write(script_content)
+    activate_script.close()
+    # prepare to install requirements
+    env = os.getenv('EASY_ENV')
+    c = helpers.Config('requirements.json')
+    requirements = c.get_requirements(env)
+    for areq in requirements:
+        run("pip install %s"%areq)
 
 @task
 def update(package):

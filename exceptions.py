@@ -14,3 +14,7 @@ class InvalidPackage(Exception):
 class TaskFailure(Exception):
     def __init__(self, message):
         super(TaskFailure, self).__init__(message)
+
+class PackageAlreadyInstalled(Exception):
+    def __init__(self, package):
+        super(PackageAlreadyInstalled, self).__init__("Package, {0} has already been installed.".format(package))

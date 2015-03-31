@@ -7,6 +7,46 @@ from string import Template
 
 from invoke import run
 
+class Site:
+    @classmethod
+    def get_path(cls):
+        return [p for p in sys.path if p.endswith('site-packages')][-1]
+
+    @classmethod
+    def detail_on(cls, package_name):
+        """
+        Return name and version of a package.
+        """
+        for pkg in cls.get_packages():
+            if re.match(r"%s="%package_name, pkg):
+                return pkg
+        return False
+
+    @classmethod
+    def get_packages(cls):
+        _, dirs, _ = next(os.walk(cls.get_path()))
+        raw_packages = filter(lambda adir: 'info' in adir, dirs)
+        packages = map(lambda pkg: re.sub(r"(?P<name>\w+)-(?P<version>[\d\.]+)\..*", "\g<name>==\g<version>", pkg), raw_packages)
+        packages = map(lambda pkg: pkg.lower(), packages)
+        return filter(lambda pkg: 'pip==' not in pkg and 'setuptools==' not in pkg, packages)
+
+    @classmethod
+    def has(cls, package_name):
+        for pkg in cls.get_packages():
+            if re.match(r"%s="%package_name, pkg) or package_name == pkg:
+                return True
+        return False
+
+
+def get_afile(file_name):
+    cwd = os.getcwd()
+    while True:
+        files = os.listdir(cwd)
+        if file_name in files:
+            return os.path.join(cwd, file_name)
+        else:
+            cwd = os.path.dirname(cwd)
+
 def get_abs_path(path):
     cwd = os.getcwd()
     if (re.match(r"./", path)):
@@ -30,7 +70,10 @@ def get_package_detail(package_name):
     required_packages = filter(lambda item: re.match(r'%s'%package_name, item), packages)
     d_package = filter(lambda item: 'info' in item, required_packages).pop()
     package_data = re.search(r"(?P<package_name>.+?)-(?P<version>[\d\.]+)", d_package)
-    return "{package_name}=={version}".format(**package_data.groupdict())
+    package_detail = "{package_name}=={version}".format(**package_data.groupdict())
+    if package_detail[-1] is '.':
+        package_detail = package_detail[:-1]
+    return package_detail
 
 class CloneProject(object):
     def __init__(self, source_dir, dest_dir, kwargs, force = False):
@@ -46,7 +89,7 @@ class CloneProject(object):
         Creates a project directory from a template.
         """
         # copy project template
-        force = self.force
+        self.force
         source_dir = self.source
         dest_dir = self.dest
         if self.force:
@@ -98,10 +141,17 @@ class Config(object):
     Gets and sets configurations.
     """
     def __init__(self, file_name):
-        self.file_name = file_name
+        self.file_name = get_afile(file_name)
         self.file = open(self.file_name, 'r')
         self.data = json.loads(self.file.read())
         self.file.close()
+
+    def get_requirements(self, env):
+        requirements = self.data['common']
+        env_reqs = self.data[env]
+        if env_reqs:
+            requirements = requirements.extend(self.data[env])
+        return requirements
 
     def add(self, key, value):
         self.file = open(self.file_name, 'w')
