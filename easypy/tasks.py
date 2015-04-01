@@ -84,16 +84,16 @@ def add(package, dev = False, test = False, prod = False):
         run("pip install %s"%package, pty = True)
     else:
         raise PackageAlreadyInstalled(package)
-    c = helpers.Config('requirements.json')
+    c = helpers.Meta('meta.json')
     package_detail = helpers.Site.detail_on(package)
     if dev:
-        c.add('dev', package_detail)
+        c.add_req('dev', package_detail)
     elif test:
-        c.add('test', package_detail)
+        c.add_req('test', package_detail)
     elif prod:
-        c.add('prod', package_detail)
+        c.add_req('prod', package_detail)
     else:
-        c.add('common', package_detail)
+        c.add_req('common', package_detail)
 
 @task
 def remove(package, dev = False, test = False, prod = False):
@@ -101,25 +101,23 @@ def remove(package, dev = False, test = False, prod = False):
     Remove a package.
     """
     run("pip uninstall %s"%package, pty = True)
-    c = helpers.Config('requirements.json')
+    c = helpers.Meta('meta.json')
     if dev:
-        c.remove('dev', package)
+        c.remove_req('dev', package)
     elif test:
-        c.remove('test', package)
+        c.remove_req('test', package)
     elif prod:
-        c.remove('prod', package)
+        c.remove_req('prod', package)
     else:
-        c.remove('common', package)
+        c.remove_req('common', package)
 
 @task
 def setup(dev = False, test = False, prod = False, all = False):
     """
     Setup a project environment.
     """
-    cwd = os.getcwd()
-    sys.path.append(cwd)
-    from __meta__ import meta
-    project_name = meta['name']
+    m = helpers.Meta('meta.json')
+    project_name = meta.get('name')
     project_env_path = "{}".format(os.path.join(VIRTUALENV_HOME, project_name))
     if dev:
         env = 'dev'
@@ -154,7 +152,7 @@ def resolve():
     activate_script.close()
     # prepare to install requirements
     env = os.getenv('EASY_ENV')
-    c = helpers.Config('requirements.json')
+    c = helpers.Meta('meta.json')
     requirements = c.get_requirements(env)
     for areq in requirements:
         run("pip install %s"%areq)

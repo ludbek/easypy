@@ -2,6 +2,6 @@ include LICENSE.nf
 include README.nf
 recursive-include docs *
 recursive-include templates *
-include requirements.json
+include meta.json
 recursive-include tests *
 global-exclude *.pyc

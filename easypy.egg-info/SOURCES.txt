@@ -1,7 +1,7 @@
 LICENSE.nf
 MANIFEST.in
 README.nf
-requirements.json
+meta.json
 easypy/__init__.py
 easypy/core.py
 easypy/exceptions.py

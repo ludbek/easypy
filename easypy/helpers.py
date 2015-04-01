@@ -136,9 +136,9 @@ class CloneProject(object):
         f.write(rendered_content)
         f.close
 
-class Config(object):
+class Meta(object):
     """
-    Gets and sets configurations.
+    Gets and sets meta data.
     """
     def __init__(self, file_name):
         self.file_name = get_afile(file_name)
@@ -147,29 +147,33 @@ class Config(object):
         self.file.close()
 
     def get_requirements(self, env):
-        requirements = self.data['common']
-        env_reqs = self.data[env]
+        requirements = self.data['requirements']['common']
+        env_reqs = self.data['requirements'][env]
         if env_reqs:
-            requirements = requirements.extend(self.data[env])
+            requirements = requirements.extend(env_reqs)
         return requirements
 
-    def add(self, key, value):
+    def add_req(self, key, value):
         self.file = open(self.file_name, 'w')
-        self.data[key].append(value)
+        self.data['requirements'][key].append(value)
         self.save()
 
     def get(self, key):
         self.file = open(self.file_name, 'r')
         return self.data[key]
 
-    def remove(self, key, value):
+    def get_req(self, key):
+        self.file = open(self.file_name, 'r')
+        return self.data['requirements'][key]
+
+    def remove_req(self, key, value):
         self.file = open(self.file_name, 'w')
-        items = self.data[key]
+        items = self.data['requirements'][key]
         to_remove = filter(lambda item: re.match(r'%s'%value, item), items)
-        self.data[key].remove(to_remove.pop())
+        self.data['requirements'][key].remove(to_remove.pop())
         self.save()
 
-    def update(self, key, hint, value):
+    def update_req(self, key, hint, value):
         self.file = open(self.file_name, 'w')
         self.remove(key, hint)
         self.add(key, value)

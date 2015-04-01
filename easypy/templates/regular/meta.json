@@ -1,0 +1,11 @@
+{
+    "name" : "",
+    "version" : "",
+    "description" : "",
+    "requirements" : {
+        "common": [],
+        "dev": [],
+        "test": [],
+        "prod": []
+    }
+}
