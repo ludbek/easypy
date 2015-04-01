@@ -1,15 +1,16 @@
 {
-    "name" : "easypy",
-    "version" : "0.0.0",
-    "description" : "A package manager, package creator and task executor for python.",
-    "requirements" : {
+    "version": "0.0.0", 
+    "requirements": {
+        "test": [], 
+        "prod": [], 
         "common": [
-            "invoke==0.10.1",
-            "virtualenv==12.0.1",
-            "virtualenvwrapper==4.3.1"
-        ],
-        "dev": [],
-        "test": [],
-        "prod": []
-    }
+            "invoke==0.10.1", 
+            "virtualenv==12.0.1", 
+            "virtualenvwrapper==4.3.1", 
+            "requests==2.6.0"
+        ], 
+        "dev": []
+    }, 
+    "name": "easypy", 
+    "description": "A package manager, package creator and task executor for python."
 }

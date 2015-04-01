@@ -144,6 +144,7 @@ class Meta(object):
         self.file_name = get_afile(file_name)
         self.file = open(self.file_name, 'r')
         self.data = json.loads(self.file.read())
+        print self.data
         self.file.close()
 
     def get_requirements(self, env):
@@ -160,6 +161,7 @@ class Meta(object):
 
     def get(self, key):
         self.file = open(self.file_name, 'r')
+        return self.data[key]
         return self.data[key]
 
     def get_req(self, key):

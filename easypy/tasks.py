@@ -116,8 +116,9 @@ def setup(dev = False, test = False, prod = False, all = False):
     """
     Setup a project environment.
     """
+    cwd = os.getcwd ()
     m = helpers.Meta('meta.json')
-    project_name = meta.get('name')
+    project_name = m.get('name')
     project_env_path = "{}".format(os.path.join(VIRTUALENV_HOME, project_name))
     if dev:
         env = 'dev'
@@ -132,9 +133,30 @@ def setup(dev = False, test = False, prod = False, all = False):
     run('virtualenv {}'.format(project_env_path))
     # register dependency resolve task
     run("echo '\npy resolve' >> {}/bin/activate".format(project_env_path))
-    run("echo '\nEASY_ENV=\"{0}\"\nEXPORT EASY_ENV' >> {1}/bin/activate".format(env, project_env_path))
+    run("echo '\nEASY_ENV=\"{0}\"\nexport EASY_ENV' >> {1}/bin/activate".format(env, project_env_path))
     # link the env to project folder
     run("echo '{0}' > {1}/.project".format(project_path, project_env_path))
+
+    # copy py script to virtualenv and replace python path to the one in vritalenv
+    py_script = """#!{}/bin/python
+
+import sys
+
+from easypy import core
+
+if __name__ == '__main__':
+    core.router(sys.argv)
+""".format(project_env_path)
+    run('echo \"{0}\" > {1}/bin/py'.format(py_script, project_env_path))
+    # help virtualenvwrapper find project directory
+    run('chmod +x {}/bin/py'.format(project_env_path))
+    # copy easypy and invoke to site-packages
+    import easypy
+    import invoke
+    easypy_path = easypy.__path__[0]
+    invoke_path = invoke.__path__[0]
+    run('cp -R {} {}/lib/python2.7/site-packages/'.format(easypy_path, project_env_path))
+    run('cp -R {} {}/lib/python2.7/site-packages/'.format(invoke_path, project_env_path))
 
 @task
 def resolve():
