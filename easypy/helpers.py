@@ -144,14 +144,13 @@ class Meta(object):
         self.file_name = get_afile(file_name)
         self.file = open(self.file_name, 'r')
         self.data = json.loads(self.file.read())
-        print self.data
         self.file.close()
 
     def get_requirements(self, env):
         requirements = self.data['requirements']['common']
         env_reqs = self.data['requirements'][env]
         if env_reqs:
-            requirements = requirements.extend(env_reqs)
+            requirements.extend(env_reqs)
         return requirements
 
     def add_req(self, key, value):
