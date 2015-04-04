@@ -154,31 +154,33 @@ class Meta(object):
         return requirements
 
     def add_req(self, key, value):
-        self.file = open(self.file_name, 'w')
         self.data['requirements'][key].append(value)
         self.save()
 
     def get(self, key):
-        self.file = open(self.file_name, 'r')
-        return self.data[key]
         return self.data[key]
 
+    def set(self, composite_key, value):
+        if "requirements" in composite_key:
+            print "let easypy handle the requirements :)"
+        key = composite_key[0]
+        self.data[key] = value
+        self.save()
+
     def get_req(self, key):
-        self.file = open(self.file_name, 'r')
         return self.data['requirements'][key]
 
     def remove_req(self, key, value):
-        self.file = open(self.file_name, 'w')
         items = self.data['requirements'][key]
         to_remove = filter(lambda item: re.match(r'%s'%value, item), items)
         self.data['requirements'][key].remove(to_remove.pop())
         self.save()
 
     def update_req(self, key, hint, value):
-        self.file = open(self.file_name, 'w')
         self.remove(key, hint)
         self.add(key, value)
 
     def save(self):
+        self.file = open(self.file_name, 'w')
         self.file.write(json.dumps(self.data, indent = 4))
         self.file.close()

@@ -134,7 +134,6 @@ def router(argv = None):
     """
     if not argv:
         argv = sys.argv
-    print argv
     if len(argv) == 1:
         run_easypy_task(argv)
         return

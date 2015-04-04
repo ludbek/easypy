@@ -1,5 +1,6 @@
 import os
 import sys
+import collections
 
 from invoke import task, run, ctask
 from invoke.exceptions import Failure
@@ -72,8 +73,14 @@ def end(name, all = False):
         afile.close()
         print "Removing {}".format(project_path)
         run('rm -RI {}'.format(project_path), pty = True)
-    print "Removing {}".format(project_env_path)
-    run('rm -RI {}'.format(project_env_path), pty = True)
+    dev_env = project_env_path
+    test_env = "{}-test".format(dev_env)
+    prod_env = "{}-prod".format(dev_env)
+    envs = [dev_env, test_env, prod_env]
+    for aenv in envs:
+        if os.path.isdir(aenv):
+            print "Removing {}".format(aenv)
+            run('rm -RI {}'.format(aenv), pty = True)
 
 @task
 def add(package, dev = False, test = False, prod = False):
@@ -129,6 +136,8 @@ def setup(dev = False, test = False, prod = False, all = False):
     elif prod:
         env = 'prod'
         project_env_path = "{}-prod".format(os.path.join(VIRTUALENV_HOME, project_name))
+    else:
+        print "TODO: setup dev, test and prod environments."
     project_path = os.path.join(os.path.dirname(cwd), project_name)
     run('virtualenv {}'.format(project_env_path))
     # register dependency resolve task
@@ -203,8 +212,23 @@ def search(name):
     pass
 
 @task
-def meta(key):
+def meta(key_value):
     """
     Give information on a project.
     """
-    print key
+    c = helpers.Meta('meta.json')
+    try:
+        # its set request
+        composite_key, value = key_value.split('=')
+        keys = composite_key.split('.')
+        c.set(keys, value)
+    except ValueError:
+        keys = key_value.split('.')
+        data = c.data
+        for akey in keys:
+            data = data[akey]
+        if hasattr(data, '__iter__'):
+            for adata in data:
+                print adata
+        else:
+            print data
