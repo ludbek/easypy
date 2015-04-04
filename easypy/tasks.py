@@ -1,7 +1,7 @@
 import os
 import sys
 
-from invoke import task, run
+from invoke import task, run, ctask
 from invoke.exceptions import Failure
 
 from easypy import helpers
@@ -54,8 +54,8 @@ if __name__ == '__main__':
     import invoke
     easypy_path = easypy.__path__[0]
     invoke_path = invoke.__path__[0]
-    run('cp -R {} {}/lib/python2.7/site-packages/'.format(easypy_path, project_env_path))
-    run('cp -R {} {}/lib/python2.7/site-packages/'.format(invoke_path, project_env_path))
+    run('ln -s {} {}/lib/python2.7/site-packages/easypy'.format(easypy_path, project_env_path))
+    run('ln -s {} {}/lib/python2.7/site-packages/invoke'.format(invoke_path, project_env_path))
     print "The project has been successfully created.\nTo work on it issue following command.\n$ workon %s"%name
 
 @task
@@ -155,8 +155,8 @@ if __name__ == '__main__':
     import invoke
     easypy_path = easypy.__path__[0]
     invoke_path = invoke.__path__[0]
-    run('cp -R {} {}/lib/python2.7/site-packages/'.format(easypy_path, project_env_path))
-    run('cp -R {} {}/lib/python2.7/site-packages/'.format(invoke_path, project_env_path))
+    run('ln -s {} {}/lib/python2.7/site-packages/easypy'.format(easypy_path, project_env_path))
+    run('ln -s {} {}/lib/python2.7/site-packages/invoke'.format(invoke_path, project_env_path))
 
 @task
 def resolve():
@@ -203,8 +203,8 @@ def search(name):
     pass
 
 @task
-def about(name, package):
+def meta(key):
     """
     Give information on a project.
     """
-    pass
+    print key
