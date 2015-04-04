@@ -40,7 +40,10 @@ def is_valid_package(package_name):
     """
     Checks if a package at site directory has tasks.
     """
-    apackage = import_module('%s.tasks'%package_name)
+    try:
+        apackage = import_module('%s.tasks'%package_name)
+    except ImportError:
+        return False
     tasks = Collection.from_module(apackage).task_names
     if tasks == {}:
         return False
@@ -49,6 +52,7 @@ def is_valid_package(package_name):
 def display_tasks_everywhere():
     """
     Display tasks in easypy, project directory and packages in site directory.
+    TODO: bug here, every call to dispatch ends the entire process tree.
     """
     display_easypy_tasks()
     display_local_tasks()
