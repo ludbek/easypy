@@ -1,9 +1,8 @@
 WARNING
     this package is a protoype. it is created for sole purpose of exploring the
-    possibilities of combining 'virtualenv', 'virtualenvwrapper', 'pip', 'invoke'
-    and 'twine'. once it gets enough feedbacks at its 'project home'[1], work for
-    stable version will begin. so use it and please report bugs and provide
-    feedbacks.
+    possibilities of combining 'virtualenv', 'virtualenvwrapper', 'pip',
+    'invoke'and 'twine'. once it gets enough feedbacks at its
+    'project home'[1], work for stable version will begin. so use it and please report bugs and provide feedbacks.
 
     the document at pypi ignores white space, so it is suggested to visit the
     github 'repo'[1] instead.
@@ -64,6 +63,16 @@ AVAILABLE TASK
 
             syntax
                 $ py deploy
+    LISTING AVAILABLE TASKS
+        1. easypy tasks
+            $ py
+        2. local tasks
+            $ py .
+        3. a package tasks
+            $ py <package_name>
+        4. list all the tasks at once (TODO)
+            $ py -a
+
 
     INSIDE VIRTUALENV
         add
