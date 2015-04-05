@@ -2,7 +2,8 @@ WARNING
     this package is a protoype. it is created for sole purpose of exploring the
     possibilities of combining 'virtualenv', 'virtualenvwrapper', 'pip',
     'invoke'and 'twine'. once it gets enough feedbacks at its
-    'project home'[1], work for stable version will begin. so use it and please report bugs and provide feedbacks.
+    'project home'[1], work for stable version will begin. so use it and please
+    report bugs and provide feedbacks.
 
     the document at pypi ignores white space, so it is suggested to visit the
     github 'repo'[1] instead.
@@ -24,7 +25,9 @@ AVAILABLE TASK
             starts a new project. creates project directory at specified path,
             creates virtualenv for development. after the environment has been
             created one can work on it by issuing 'workon <project_name>' at the
-            terminal.
+            terminal. if 'workon' command is not available, source it by
+            issueing following command:
+                'source ~/.bashrc'
 
             syntax:
                 $ py start <project_name> -d <path/to/project/home/> [-p -f]
