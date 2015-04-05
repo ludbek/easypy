@@ -5,8 +5,8 @@ WARNING
     stable version will begin. so use it and please report bugs and provide
     feedbacks.
 
-    the document here ignores white space, so its suggested to visit the github
-    'repo'[1] instead.
+    the document at pypi ignores white space, so it is suggested to visit the
+    github 'repo'[1] instead.
 
 HOW IT WORKS
     it uses 'invoke', the pythonic task executor at its core. it sits on top of
@@ -17,7 +17,7 @@ HOW IT WORKS
     for creating generic python projects as well as a python package.
 
 INSTALLATION
-    1. $ pip isntall easypy
+    1. $ pip install easypy
 
 AVAILABLE TASK
     GLOBAL
@@ -31,7 +31,7 @@ AVAILABLE TASK
                 $ py start <project_name> -d <path/to/project/home/> [-p -f]
                 options
                     -d = directory
-                    -p = is it python package
+                    -p = if it is python package
                     -f = overwrite existing directory at project home
         end
             it removes virtual environments associated with a project. if --all
@@ -52,8 +52,8 @@ AVAILABLE TASK
                     --test = for test environment
                     --prod = for production environment
         register
-            it registers a python package at pypi. it uses 'python setup register'
-            behind the scene.
+            it registers a python package at pypi. it uses
+            'python setup register' behind the scene.
 
             syntax
                 $ py register
