@@ -141,7 +141,7 @@ def router(argv = None):
     if len(argv) == 1:
         run_easypy_task(argv)
         return
-    if argv[1] in ['start', 'end', 'setup']:
+    if argv[1] in ['start', 'end', 'setup', 'register', 'deploy']:
         run_easypy_task(argv)
         return
     if len(argv) == 2 and argv[1] in ['-a', '--all']:

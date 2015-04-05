@@ -232,3 +232,22 @@ def meta(key_value):
                 print adata
         else:
             print data
+
+@task
+def register():
+    """
+    Create a new account at PYPI.
+    """
+    run("python setup.py register", pty = True)
+
+@task
+def deploy():
+    """
+    Create and upload python package to PYPI.
+    """
+    c = helpers.Meta('meta.json')
+    version = c.get('version')
+    name = c.get('name')
+    run("python setup.py sdist")
+    package_path = "dist/{}-{}.tar.gz".format(name, version)
+    run("twine upload {}".format(package_path))

@@ -182,5 +182,6 @@ class Meta(object):
 
     def save(self):
         self.file = open(self.file_name, 'w')
-        self.file.write(json.dumps(self.data, indent = 4))
+        data = json.dumps(self.data, indent = 4)
+        self.file.write(data)
         self.file.close()
