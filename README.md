@@ -1,7 +1,12 @@
 WARNING
     this package is a protoype. it is created for sole purpose of exploring the
     possibilities of combining 'virtualenv', 'virtualenvwrapper', 'pip', 'invoke'
-    and 'twine'.
+    and 'twine'. once it gets enough feedbacks at its 'project home'[1], work for
+    stable version will begin. so use it and please report bugs and provide
+    feedbacks.
+
+    the document here ignores white space, so its suggested to visit the github
+    'repo'[1] instead.
 
 HOW IT WORKS
     it uses 'invoke', the pythonic task executor at its core. it sits on top of
@@ -100,4 +105,4 @@ AVAILABLE TASK
                     - description
 
 
-[1]
+[1] https://github.com/ludbek/easypy
