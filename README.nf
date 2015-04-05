@@ -11,6 +11,9 @@ HOW IT WORKS
     finally registering and deploying python packages at 'pypi'. it can be used
     for creating generic python projects as well as a python package.
 
+INSTALLATION
+    1. $ pip isntall easypy
+
 AVAILABLE TASK
     GLOBAL
         start
@@ -95,3 +98,6 @@ AVAILABLE TASK
                     - name
                     - version
                     - description
+
+
+[1]

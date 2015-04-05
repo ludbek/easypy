@@ -36,3 +36,18 @@ package['description'] = c.get('description')
 package['install_requires'] = c.get_requirements('prod')
 
 setup(**package)
+
+# configure virtualenvwrapper
+path_to_bashrc = os.path.join(os.path.expanduser("~"), ".bashrc")
+file = open(path_to_bashrc, 'r')
+content = file.read()
+file.close()
+
+if not "source /usr/local/bin/virtualenvwrapper.sh" in content:
+    vw_config = """
+export WORKON_HOME=$HOME/.virtualenvs
+source /usr/local/bin/virtualenvwrapper.sh
+"""
+    file = open(path_to_bashrc, 'a')
+    file.write(vw_config)
+    file.close()
