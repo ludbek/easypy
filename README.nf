@@ -8,7 +8,8 @@ HOW IT WORKS
     'invoke', 'pip', 'virtualenv', 'virtualenvwrapper' and 'twine'. it provides
     tasks for creating and managing virtualenv, installing, removing, updating
     and automatically recording the package requirements at 'meta.json' file and
-    finally registering and deploying python packages at 'pypi'.
+    finally registering and deploying python packages at 'pypi'. it can be used
+    for creating generic python projects as well as a python package.
 
 AVAILABLE TASK
     GLOBAL
