@@ -1,5 +1,7 @@
-*Deprecated*
-    Checkout https://github.com/ludbek/bro instead.
+**DEPRECATED**
+    Checkout https://github.com/ludbek/bro instead. It is a subset of 'easypy'.
+    It supports project management and task execution. Rest of the features can
+    be implemented as custom tasks.
 
 WARNING
     this package is a protoype. it is created for sole purpose of exploring the
