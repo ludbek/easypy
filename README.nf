@@ -1,3 +1,6 @@
+*Deprecated*
+    Checkout https://github.com/ludbek/bro instead.
+
 WARNING
     this package is a protoype. it is created for sole purpose of exploring the
     possibilities of combining 'virtualenv', 'virtualenvwrapper', 'pip',
